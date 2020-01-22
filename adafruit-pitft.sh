@@ -255,7 +255,7 @@ EOF
     fi
 
     if [ "${pitfttype}" == "st7789_240x240_13" ]; then
-        dtc -@ -I dts -O dtb -o /boot/overlays/drm-minipitft114.dtbo overlays/minipitft114-overlay.dts
+        dtc -@ -I dts -O dtb -o /boot/overlays/drm-minipitft114.dtbo overlays/minipitft13-overlay.dts
         echo "############# UPGRADING KERNEL ###############"
         sudo apt update  || { warning "Apt failed to update itself!" && exit 1; }
         sudo apt-get upgrade || { warning "Apt failed to install software!" && exit 1; }
@@ -265,7 +265,7 @@ EOF
         make -C /lib/modules/$(uname -r)/build M=$(pwd) modules  || { warning "Apt failed to compile ST7789V driver!" && exit 1; }
         mv /lib/modules/$(uname -r)/kernel/drivers/gpu/drm/tinydrm/mi0283qt.ko /lib/modules/$(uname -r)/kernel/drivers/gpu/drm/tinydrm/mi0283qt.BACK
         mv st7789v_ada.ko /lib/modules/$(uname -r)/kernel/drivers/gpu/drm/tinydrm/mi0283qt.ko
-        overlay="dtoverlay=drm-minipitft13,rotation=${pitftrot}"
+        overlay="dtoverlay=drm-minipitft114,rotation=${pitftrot}"
     fi
 
     date=`date`
