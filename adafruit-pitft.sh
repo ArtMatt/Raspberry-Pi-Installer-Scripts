@@ -603,7 +603,7 @@ pitfttype=${PITFT_TYPES[$PITFT_SELECT-1]}
 pitftrot=${PITFT_ROTATIONS[$PITFT_ROTATE-1]}
 
 
-if [ "${pitfttype}" != "28r" ] && [ "${pitfttype}" != "28c" ] && [ "${pitfttype}" != "35r" ] && [ "${pitfttype}" != "22" ] && [ "${pitfttype}" != "st7789_240x240" ] && [ "${pitfttype}" != "st7789_240x135" ]; then
+if [ "${pitfttype}" != "28r" ] && [ "${pitfttype}" != "28c" ] && [ "${pitfttype}" != "35r" ] && [ "${pitfttype}" != "22" ] && [ "${pitfttype}" != "st7789_240x240" ] && [ "${pitfttype}" != "st7789_240x135" ] && [ "${pitfttype}" != "st7789_240x135" ]; then
     echo "Type must be one of:"
     echo "  '28r' (2.8\" resistive, PID 1601)"
     echo "  '28c' (2.8\" capacitive, PID 1983)"
