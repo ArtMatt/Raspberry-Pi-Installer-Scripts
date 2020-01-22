@@ -254,6 +254,20 @@ EOF
         overlay="dtoverlay=drm-minipitft114,rotation=${pitftrot}"
     fi
 
+    if [ "${pitfttype}" == "st7789_240x240_13" ]; then
+        dtc -@ -I dts -O dtb -o /boot/overlays/drm-minipitft114.dtbo overlays/minipitft114-overlay.dts
+        echo "############# UPGRADING KERNEL ###############"
+        sudo apt update  || { warning "Apt failed to update itself!" && exit 1; }
+        sudo apt-get upgrade || { warning "Apt failed to install software!" && exit 1; }
+        apt-get install -y raspberrypi-kernel-headers 1> /dev/null  || { warning "Apt failed to install software!" && exit 1; }
+        [ -d /lib/modules/$(uname -r)/build ] ||  { warning "Kernel was updated, please reboot now and re-run script!" && exit 1; }
+        cd st7789_module
+        make -C /lib/modules/$(uname -r)/build M=$(pwd) modules  || { warning "Apt failed to compile ST7789V driver!" && exit 1; }
+        mv /lib/modules/$(uname -r)/kernel/drivers/gpu/drm/tinydrm/mi0283qt.ko /lib/modules/$(uname -r)/kernel/drivers/gpu/drm/tinydrm/mi0283qt.BACK
+        mv st7789v_ada.ko /lib/modules/$(uname -r)/kernel/drivers/gpu/drm/tinydrm/mi0283qt.ko
+        overlay="dtoverlay=drm-minipitft13,rotation=${pitftrot}"
+    fi
+
     date=`date`
 
     cat >> /boot/config.txt <<EOF
@@ -510,9 +524,10 @@ selectN "PiTFT 2.4\", 2.8\" or 3.2\" resistive (240x320)" \
         "PiTFT 3.5\" resistive touch (320x480)" \
         "Braincraft 1.54\" display (240x240)" \
         "MiniPiTFT 1.14\" display (240x135) - WARNING! CUTTING EDGE! WILL UPGRADE YOUR KERNEL TO LATEST" \
+        "MiniPiTFT 1.3\" display (240x240) - WARNING! CUTTING EDGE! WILL UPGRADE YOUR KERNEL TO LATEST" \
         "Quit without installing"
 PITFT_SELECT=$?
-if [ $PITFT_SELECT -gt 6 ]; then
+if [ $PITFT_SELECT -gt 7 ]; then
     exit 1
 fi
 
@@ -527,7 +542,7 @@ if [ $PITFT_ROTATE -gt 4 ]; then
 fi
 
 PITFT_ROTATIONS=("90" "180" "270" "0")
-PITFT_TYPES=("28r" "22" "28c" "35r" "st7789_240x240" "st7789_240x135")
+PITFT_TYPES=("28r" "22" "28c" "35r" "st7789_240x240" "st7789_240x135" "st7789_240x240_13")
 WIDTH_VALUES=(320 320 320 480 240)
 HEIGHT_VALUES=(240 240 240 320 240)
 HZ_VALUES=(64000000 64000000 64000000 32000000 64000000)
@@ -596,6 +611,7 @@ if [ "${pitfttype}" != "28r" ] && [ "${pitfttype}" != "28c" ] && [ "${pitfttype}
     echo "  '22'  (2.2\" no touch)"
     echo "  'st7789_240x240' (1.54\" or 1.3\" no touch)"
     echo "  'st7789_240x135' 1.14\" no touch)"
+    echo "  'st7789_240x135' 1.3\" no touch)"
     echo
     print_help
 fi
